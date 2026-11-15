@@ -13,7 +13,7 @@ public class Window extends JFrame{
         panel = new Panel(width, height);
         add(panel);
         pack();
-        setLocationRelativeTo(null); 
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 
