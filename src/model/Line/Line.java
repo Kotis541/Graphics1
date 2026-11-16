@@ -1,4 +1,6 @@
-package model;
+package model.Line;
+
+import model.Point;
 
 public class Line {
     Point p1;
