@@ -1,7 +1,6 @@
 package controller;
 
 import gui.Panel;
-import javax.swing.*;
 import java.awt.event.*;
 
 public class Controller2D implements KeyListener {
