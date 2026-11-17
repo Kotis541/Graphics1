@@ -7,8 +7,10 @@ import model.line.Line;
 import model.line.LineRasterizer;
 import model.polygon.Polygon;
 import model.polygon.PolygonRasterizer;
+import fill.Seedfilter;
 
 import javax.swing.SwingUtilities;
+
 import java.awt.Color;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -27,9 +29,11 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
     private final List<Line> lines = new ArrayList<>();
     private final Polygon polygon = new Polygon();
     private Mode mode = Mode.LINE;
+    private final Seedfilter seed;
 
     public Controller2D(Panel panel, Tool tool) {
         this.panel = panel;
+        this.seed = new Seedfilter(panel.getRaster());
         this.lineRasterizer = new LineRasterizer(panel.getRaster());
         this.polygonRasterizer = new PolygonRasterizer(this.lineRasterizer);
 
@@ -64,6 +68,15 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
     public void keyReleased(KeyEvent e) {}
 
     public void mousePressed(MouseEvent e) {
+        if (SwingUtilities.isRightMouseButton(e)) {
+            if (e.isShiftDown()) {
+                seed.fillByBoundary(e.getX(), e.getY(), Color.BLUE.getRGB(), Color.RED.getRGB());
+            } else {
+                seed.fill(e.getX(), e.getY(), Color.BLUE.getRGB());
+            }
+            panel.repaint();
+            return;
+        }
         if (!SwingUtilities.isLeftMouseButton(e)) {
             return;
         }

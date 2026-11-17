@@ -31,5 +31,25 @@ public class RasterBufferedImage implements Raster{
         g.clearRect(0, 0, image.getWidth(), image.getHeight());
     }
 
+    @Override 
+    public int getPixel(int x, int y) {
+        if (x >= 0 && x < image.getWidth() && y >= 0 && y < image.getHeight()) {
+            return image.getRGB(x, y);
+        }
+        return 0;
+    }
+
+    @Override
+    public int getWidth() {
+        return image.getWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return image.getHeight();
+    }
+
+
+
 
 }
