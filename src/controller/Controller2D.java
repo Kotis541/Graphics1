@@ -41,7 +41,8 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
         }
     }
 
-    public void keyTyped(KeyEvent e) {}
+    public void keyTyped(KeyEvent e) {
+    }
 
     public void keyReleased(KeyEvent e) {}
 
@@ -51,13 +52,13 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
 
     public void mouseDragged(MouseEvent e) {
         drawScene();
-        Line preview = new Line(this.actualP, new Point(e.getX(), e.getY()));
+        Line preview = new Line(this.actualP, getEndPoint(e));
         lineRasterizer.rasterize(preview, Color.RED.getRGB());
         panel.repaint();
     }
 
     public void mouseReleased(MouseEvent e) {
-        lines.add(new Line(this.actualP, new Point(e.getX(), e.getY())));
+        lines.add(new Line(this.actualP, getEndPoint(e)));
         drawScene();
         panel.repaint();
     }
@@ -67,6 +68,42 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
         for (Line line : lines){
             lineRasterizer.rasterize(line, Color.RED.getRGB());
         }
+    }
+
+    private Point getEndPoint(MouseEvent e) {
+        int x = e.getX();
+        int y = e.getY();
+
+        if (e.isShiftDown()) {
+            int dx = x - this.actualP.getX();
+            int dy = y - this.actualP.getY();
+
+            int absDx = Math.abs(dx);
+            int absDy = Math.abs(dy);
+
+            if (absDy < absDx * 0.5) {
+                y = this.actualP.getY();
+            }
+            else if (absDx < absDy * 0.5) {
+                x = this.actualP.getX();
+            }
+            else {
+                int d = Math.max(absDx, absDy);
+                if (dx >= 0) {
+                    x = this.actualP.getX() + d;
+                }
+                else {
+                    x = this.actualP.getX() - d;
+                }
+                if (dy >= 0) {
+                    y = this.actualP.getY() + d;
+                }
+                else {
+                    y = this.actualP.getY() - d;
+                }
+            }
+        }
+        return new Point(x, y);
     }
 
     public void mouseClicked(MouseEvent e) {}
