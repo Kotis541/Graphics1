@@ -7,6 +7,7 @@ import model.line.Line;
 import model.line.LineRasterizer;
 import model.polygon.Polygon;
 import model.polygon.PolygonRasterizer;
+import fill.Scanline;
 import fill.Seedfilter;
 
 import javax.swing.SwingUtilities;
@@ -29,16 +30,24 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
     private final List<Line> lines = new ArrayList<>();
     private final Polygon polygon = new Polygon();
     private Mode mode = Mode.LINE;
+    private boolean scanlineEnabled = false;
     private final Seedfilter seed;
+    private final Scanline scanline;
 
     public Controller2D(Panel panel, Tool tool) {
         this.panel = panel;
         this.seed = new Seedfilter(panel.getRaster());
+        this.scanline = new Scanline(panel.getRaster());
         this.lineRasterizer = new LineRasterizer(panel.getRaster());
         this.polygonRasterizer = new PolygonRasterizer(this.lineRasterizer);
 
         tool.getBtnLine().addActionListener(e -> mode = Mode.LINE);
         tool.getBtnPolygon().addActionListener(e -> mode = Mode.POLYGON);
+        tool.getBtnScanline().addActionListener(e -> {
+            scanlineEnabled = !scanlineEnabled;
+            drawScene();
+            panel.repaint();
+        });
         tool.getBtnClear().addActionListener(e -> clearScene());
 
         panel.addKeyListener(this);
@@ -119,6 +128,9 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
 
     private void drawScene() {
         panel.getRaster().clear();
+        if (scanlineEnabled) {
+            scanline.fill(polygon, Color.GREEN.getRGB());
+        }
         for (Line line : lines) {
             lineRasterizer.rasterize(line, Color.RED.getRGB());
         }
