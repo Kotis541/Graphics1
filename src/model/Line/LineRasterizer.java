@@ -1,4 +1,4 @@
-package model.Line;
+package model.line;
 
 import raster.Raster;
 

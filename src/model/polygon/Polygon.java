@@ -1,7 +1,9 @@
-package model;
+package model.polygon;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import model.Point;
 
 public class Polygon {
     private final List<Point> points = new ArrayList<>();
@@ -20,6 +22,10 @@ public class Polygon {
 
     public Point getPoint(int index) {
         return points.get(index);
+    }
+
+    public void clear() {
+        points.clear();
     }
 
 }
