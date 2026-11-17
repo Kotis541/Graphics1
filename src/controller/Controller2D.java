@@ -7,6 +7,7 @@ import model.line.Line;
 import model.line.LineRasterizer;
 import model.polygon.Polygon;
 import model.polygon.PolygonRasterizer;
+import clip.CohenSutherland;
 import fill.Scanline;
 import fill.Seedfilter;
 
@@ -31,13 +32,16 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
     private final Polygon polygon = new Polygon();
     private Mode mode = Mode.LINE;
     private boolean scanlineEnabled = false;
+    private boolean clipEnabled = false;
     private final Seedfilter seed;
     private final Scanline scanline;
+    private final CohenSutherland clipper;
 
     public Controller2D(Panel panel, Tool tool) {
         this.panel = panel;
         this.seed = new Seedfilter(panel.getRaster());
         this.scanline = new Scanline(panel.getRaster());
+        this.clipper = new CohenSutherland(150, 100, 650, 500);
         this.lineRasterizer = new LineRasterizer(panel.getRaster());
         this.polygonRasterizer = new PolygonRasterizer(this.lineRasterizer);
 
@@ -45,6 +49,11 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
         tool.getBtnPolygon().addActionListener(e -> mode = Mode.POLYGON);
         tool.getBtnScanline().addActionListener(e -> {
             scanlineEnabled = !scanlineEnabled;
+            drawScene();
+            panel.repaint();
+        });
+        tool.getBtnClip().addActionListener(e -> {
+            clipEnabled = !clipEnabled;
             drawScene();
             panel.repaint();
         });
@@ -131,10 +140,28 @@ public class Controller2D implements KeyListener, MouseListener, MouseMotionList
         if (scanlineEnabled) {
             scanline.fill(polygon, Color.GREEN.getRGB());
         }
+        if (clipEnabled) {
+            drawClipWindow();
+        }
         for (Line line : lines) {
-            lineRasterizer.rasterize(line, Color.RED.getRGB());
+            Line toDraw = clipEnabled ? clipper.clip(line) : line;
+            if (toDraw != null) {
+                lineRasterizer.rasterize(toDraw, Color.RED.getRGB());
+            }
         }
         polygonRasterizer.rasterize(polygon, Color.RED.getRGB());
+    }
+
+    private void drawClipWindow() {
+        Point tl = new Point(clipper.getXMin(), clipper.getYMin());
+        Point tr = new Point(clipper.getXMax(), clipper.getYMin());
+        Point br = new Point(clipper.getXMax(), clipper.getYMax());
+        Point bl = new Point(clipper.getXMin(), clipper.getYMax());
+        int color = Color.YELLOW.getRGB();
+        lineRasterizer.rasterize(new Line(tl, tr), color);
+        lineRasterizer.rasterize(new Line(tr, br), color);
+        lineRasterizer.rasterize(new Line(br, bl), color);
+        lineRasterizer.rasterize(new Line(bl, tl), color);
     }
 
     private Point getEndPoint(MouseEvent e) {
