@@ -20,6 +20,7 @@ public class LineRasterizer {
         );
     }
 
+    // Rasterizace úsečky pomocí algoritmu DDA (Digital Differential Analyzer)
     public void rasterize(int x1, int y1, int x2, int y2, int color) {
         int dx = x2 - x1;
         int dy = y2 - y1;
