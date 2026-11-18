@@ -1,2 +1,7 @@
 bin
 .vscode
+src/*.class
+src/*/*.class
+src/model/line/*.class
+src/model/polygon/*.class
+doc/*

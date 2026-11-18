@@ -27,8 +27,8 @@ public class LineRasterizer {
 
         int steps = Math.max(Math.abs(dx), Math.abs(dy));
         if (steps == 0) {
-            raster.setPixel(x1, y1, color);
-            return ;
+            setPixelIfInBounds(x1, y1, color);
+            return;
         }
 
         float xInc = (float) dx / steps;
@@ -37,12 +37,16 @@ public class LineRasterizer {
         float x = x1;
         float y = y1;
 
-        for(int i = 0; i <= steps; i++) {
-            raster.setPixel(Math.round(x), Math.round(y), color);
+        for (int i = 0; i <= steps; i++) {
+            setPixelIfInBounds(Math.round(x), Math.round(y), color);
             x += xInc;
             y += yInc;
         }
-        
-        
+    }
+
+    private void setPixelIfInBounds(int x, int y, int color) {
+        if (x >= 0 && x < raster.getWidth() && y >= 0 && y < raster.getHeight()) {
+            raster.setPixel(x, y, color);
+        }
     }
 }
